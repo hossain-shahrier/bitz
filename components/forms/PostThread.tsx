@@ -20,7 +20,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 // UploadThing
 import { connectToDB } from '@/lib/mongoose';
-
+import { useOrganization } from '@clerk/nextjs';
 // import { updateUser } from '@/lib/actions/user.action';
 import { ThreadValidation, CommentValidation } from '@/lib/validations/thread';
 import { createThread } from '@/lib/actions/thread.action';
@@ -31,6 +31,7 @@ interface Props {
 function PostThread({ userId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const { organization } = useOrganization();
 
   const form = useForm({
     resolver: zodResolver(ThreadValidation),
@@ -44,7 +45,7 @@ function PostThread({ userId }: Props) {
     await createThread({
       text: values.thread,
       author: userId,
-      communityId: null,
+      communityId: organization ? organization.id : null,
       path: pathname,
     });
 
